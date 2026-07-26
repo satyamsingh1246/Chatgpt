@@ -10,6 +10,6 @@ const httpServer = http.createServer(app)
 connectDB() 
 initSocketServer(httpServer)
 
-httpServer.listen(3000, () => {   
-    console.log('server is listening at port 3000')
+httpServer.listen(5000, () => {   
+    console.log('server is listening at port 5000')
 })  

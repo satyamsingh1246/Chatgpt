@@ -1,0 +1,32 @@
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-size: 1.5rem;
+}
+
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--bg-dark);
+  gap: 2rem;
+}
+
+.auth-toggle {
+  background-color: transparent;
+  color: var(--primary);
+  padding: 0;
+  font-size: 0.875rem;
+  text-decoration: underline;
+}
+
+.auth-toggle:hover {
+  opacity: 1;
+  color: var(--primary-dark);
+}

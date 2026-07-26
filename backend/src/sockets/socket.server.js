@@ -8,32 +8,47 @@ const messageModel = require("../models/message.model");
 const { createMemory, queryMemory } = require("../services/vector.service");
 
 function initSocketServer(httpServer) {
-  const io = new Server(httpServer, {});
+  const io = new Server(httpServer, {
+    cors: {
+      origin: 'http://localhost:5174',
+      credentials: true,
+      methods: ['GET', 'POST'],
+    },
+  });
 
   io.use(async (socket, next) => {
     try {
-      const cookies = cookie.parse(socket.handshake.headers?.cookie || "");
-
-      if (!cookies.token) {
-        return next(new Error("Authentication error: No token provided"));
+      let token = null
+      
+      // Try to get token from cookies
+      const cookies = cookie.parse(socket.handshake.headers?.cookie || '')
+      token = cookies.token
+      
+      // If not in cookies, try query parameters
+      if (!token && socket.handshake.query?.token) {
+        token = socket.handshake.query.token
       }
 
-      const decoded = jwt.verify(cookies.token, process.env.JWT_SECRET);
+      if (!token) {
+        return next(new Error('Authentication error: No token provided'))
+      }
 
-      const user = await userModel.findById(decoded.id);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+
+      const user = await userModel.findById(decoded.id)
 
       if (!user) {
-        return next(new Error("Authentication error: User not found"));
+        return next(new Error('Authentication error: User not found'))
       }
 
-      socket.user = user;
+      socket.user = user
 
-      next();
+      next()
     } catch (error) {
-      console.log("Socket Auth Error:", error.message);
-      next(new Error("Authentication error: Invalid token"));
+      console.log('Socket Auth Error:', error.message)
+      next(new Error('Authentication error: Invalid token'))
     }
-  });
+  })
 
   io.on("connection", (socket) => {
     socket.on("ai-message", async (messagePayload) => {

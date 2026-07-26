@@ -4,7 +4,15 @@ const jwt = require('jsonwebtoken')
 
 async function authUser(req,res,next) {
     
-    const {token} = req.cookies
+    let token = req.cookies.token
+    
+    // Also check Authorization header
+    if (!token) {
+      const authHeader = req.headers.authorization
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7) // Remove 'Bearer ' prefix
+      }
+    }
 
     if(!token){
       return res.status(401).json({message:"Unauthorized"})
